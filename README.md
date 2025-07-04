@@ -39,3 +39,9 @@
 ```bash
 git clone https://github.com/SruthiGandla01/SeeHearAI.git
 cd SeeHearAI
+
+### 2️⃣ Create and Activate a Virtual Environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # (On Windows: .venv\Scripts\activate)
