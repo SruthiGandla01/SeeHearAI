@@ -133,6 +133,7 @@ aws lambda invoke \
 - 📊 Expand analytics dashboard with **session duration, usage heatmaps**, and **error logs**  
 - ☁️ Add **cost monitoring** and **autoscaling** logic to optimize AWS usage
   
+---
 ### 📬 Contact
 
 👩‍💻 Developed by: Sruthi Gandla
