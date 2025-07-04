@@ -136,7 +136,9 @@ aws lambda invoke \
 ### 📬 Contact
 
 👩‍💻 Developed by: Sruthi Gandla
+
 📧 Email: sruthi.gandla01@gmail.com
+
 🌐 GitHub: github.com/SruthiGandla01
 
 Built with ❤️ by Sruthi Gandla
