@@ -1,0 +1,19 @@
+# Ignore virtual environments
+.venv/
+__pycache__/
+*.pyc
+
+# Ignore system and editor files
+.vscode/
+*.log
+
+# Ignore data and build artifacts
+*.zip
+*.tar
+*.tar.gz
+*.pt
+*.h5
+*.db
+
+# Ignore version control
+.git/

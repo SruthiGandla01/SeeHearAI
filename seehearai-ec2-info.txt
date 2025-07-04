@@ -1,0 +1,13 @@
+# SeeHearAI EC2 Instance Information
+# ==================================
+INSTANCE_ID=i-0377b265d9527dd49
+PUBLIC_IP=3.80.122.124
+INSTANCE_TYPE=t3.medium
+KEY_NAME=seeherai-key
+SECURITY_GROUP_ID=sg-0641f41e0ebe0d8af
+
+# SSH Connection:
+ssh -i seeherai-key.pem ec2-user@3.80.122.124
+
+# SeeHearAI URL (after deployment):
+http://3.80.122.124:8000

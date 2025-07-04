@@ -1,0 +1,1 @@
+{"statusCode": 200, "body": "{\"message\": \"ETL pipeline completed successfully\", \"processed_sessions\": 11, \"analytics_generated\": 7}"}

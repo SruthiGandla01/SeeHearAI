@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionStream Live - AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .status-listening {
+            background: rgba(52, 152, 219, 0.3);
+            border: 2px solid #3498db;
+        }
+
+        .status-hotword {
+            background: rgba(46, 204, 113, 0.3);
+            border: 2px solid #2ecc71;
+            animation: pulse 1s infinite;
+        }
+
+        .status-processing {
+            background: rgba(241, 196, 15, 0.3);
+            border: 2px solid #f1c40f;
+        }
+
+        .status-error {
+            background: rgba(231, 76, 60, 0.3);
+            border: 2px solid #e74c3c;
+        }
+
+        .status-idle {
+            background: rgba(149, 165, 166, 0.3);
+            border: 2px solid #95a5a6;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .video-container {
+            position: relative;
+            margin: 20px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        #videoFeed {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .response-area {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            min-height: 150px;
+        }
+
+        .response-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .response-item h4 {
+            margin-bottom: 8px;
+            color: #ecf0f1;
+        }
+
+        .response-item p {
+            line-height: 1.6;
+            color: #bdc3c7;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .debug-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .frame-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 SeeHearAI</h1>
+            <p>Your AI Vision Assistant - Say "Hey Buddy" to start</p>
+        </div>
+
+        <div id="statusIndicator" class="status-indicator status-idle">
+            <span id="statusText">🎤 Click "Start Listening" to begin</span>
+        </div>
+
+        <div class="video-container">
+            <video id="videoFeed" autoplay muted playsinline></video>
+        </div>
+
+        <div class="controls">
+            <button id="startListening" class="btn btn-success">Start Listening</button>
+            <button id="stopListening" class="btn btn-danger" disabled>Stop Listening</button>
+            <button id="testFrame" class="btn btn-primary" disabled>Test Frame Capture</button>
+        </div>
+
+        <div class="frame-info">
+            <div><strong>Frame Status:</strong> <span id="frameStatus">Not capturing</span></div>
+            <div><strong>Frames Sent:</strong> <span id="frameCount">0</span></div>
+            <div><strong>WebSocket:</strong> <span id="wsStatus">Disconnected</span></div>
+        </div>
+
+        <div class="response-area">
+            <h3>🤖 AI Responses</h3>
+            <div id="responseContainer">
+                <p style="text-align: center; opacity: 0.7;">No responses yet. Say "Hey Buddy" to start!</p>
+            </div>
+        </div>
+
+        <div class="debug-info">
+            <h4>🔧 Debug Info:</h4>
+            <div id="debugContainer">
+                <p>Waiting for initialization...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class VisionStreamApp {
+            constructor() {
+                this.websocket = null;
+                this.mediaStream = null;
+                this.recognition = null;
+                this.isListening = false;
+                this.frameCapture = null;
+                this.frameCount = 0; // Initialize as number
+                this.speechPaused = false; // Track if speech recognition is paused
+                
+                this.initializeElements();
+                this.setupEventListeners();
+                this.initializeSpeechRecognition();
+                
+                this.addDebugInfo('Application initialized');
+            }
+
+            initializeElements() {
+                this.startListeningBtn = document.getElementById('startListening');
+                this.stopListeningBtn = document.getElementById('stopListening');
+                this.testFrameBtn = document.getElementById('testFrame');
+                this.videoFeed = document.getElementById('videoFeed');
+                this.statusIndicator = document.getElementById('statusIndicator');
+                this.statusText = document.getElementById('statusText');
+                this.responseContainer = document.getElementById('responseContainer');
+                this.debugContainer = document.getElementById('debugContainer');
+                this.frameStatus = document.getElementById('frameStatus');
+                this.frameCount = document.getElementById('frameCount');
+                this.wsStatus = document.getElementById('wsStatus');
+            }
+
+            setupEventListeners() {
+                this.startListeningBtn.addEventListener('click', () => this.startListening());
+                this.stopListeningBtn.addEventListener('click', () => this.stopListening());
+                this.testFrameBtn.addEventListener('click', () => this.testFrameCapture());
+            }
+
+            initializeSpeechRecognition() {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                    this.recognition.continuous = true;
+                    this.recognition.interimResults = false; // Only final results
+                    this.recognition.lang = 'en-US';
+                    
+                    this.recognition.onresult = (event) => {
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            if (event.results[i].isFinal) {
+                                const transcript = event.results[i][0].transcript;
+                                this.handleSpeechResult(transcript);
+                            }
+                        }
+                    };
+                    
+                    this.recognition.onerror = (event) => {
+                        console.error('Speech recognition error:', event.error);
+                        this.addDebugInfo(`Speech error: ${event.error}`);
+                    };
+                    
+                    this.recognition.onend = () => {
+                        if (this.isListening && !this.speechPaused) {
+                            // Only restart if we're still listening and not paused
+                            setTimeout(() => {
+                                if (this.isListening && !this.speechPaused) {
+                                    this.recognition.start();
+                                }
+                            }, 1000);
+                        }
+                    };
+                    
+                    this.addDebugInfo('Speech recognition initialized');
+                } else {
+                    this.addDebugInfo('Speech recognition not supported');
+                    alert('Speech recognition not supported in this browser. Please use Chrome or Edge.');
+                }
+            }
+
+            async startListening() {
+                try {
+                    this.addDebugInfo('Starting camera and audio...');
+                    
+                    // Start camera
+                    this.mediaStream = await navigator.mediaDevices.getUserMedia({
+                        video: { width: 1280, height: 720 },
+                        audio: false
+                    });
+                    this.videoFeed.srcObject = this.mediaStream;
+                    
+                    // Wait for video to load
+                    await new Promise((resolve) => {
+                        this.videoFeed.onloadedmetadata = () => {
+                            this.addDebugInfo(`Video ready: ${this.videoFeed.videoWidth}x${this.videoFeed.videoHeight}`);
+                            resolve();
+                        };
+                    });
+                    
+                    // Connect WebSocket
+                    await this.connectWebSocket();
+                    
+                    // Start speech recognition
+                    if (this.recognition) {
+                        this.recognition.start();
+                        this.isListening = true;
+                        this.addDebugInfo('Speech recognition started');
+                    }
+                    
+                    // Start video frame capture
+                    this.startVideoFrameCapture();
+                    
+                    // Update UI
+                    this.startListeningBtn.disabled = true;
+                    this.stopListeningBtn.disabled = false;
+                    this.testFrameBtn.disabled = false;
+                    this.updateStatus('listening', '🎤 Listening for "Hey Buddy"...');
+                    this.frameStatus.textContent = 'Capturing';
+                    
+                    this.addDebugInfo('✅ All systems started successfully');
+                    
+                } catch (error) {
+                    console.error('Failed to start:', error);
+                    this.updateStatus('error', '❌ Failed to start. Check permissions.');
+                    this.addDebugInfo(`❌ Start error: ${error.message}`);
+                }
+            }
+
+            async connectWebSocket() {
+                return new Promise((resolve, reject) => {
+                    const wsUrl = `ws://${window.location.host}/ws`;
+                    this.websocket = new WebSocket(wsUrl);
+                    
+                    this.websocket.onopen = () => {
+                        this.addDebugInfo('✅ WebSocket connected');
+                        this.wsStatus.textContent = 'Connected';
+                        resolve();
+                    };
+                    
+                    this.websocket.onmessage = (event) => {
+                        try {
+                            const message = JSON.parse(event.data);
+                            if (message.type !== 'ping') { // Ignore ping messages
+                                this.handleWebSocketMessage(message);
+                            }
+                        } catch (e) {
+                            this.addDebugInfo(`WebSocket message error: ${e.message}`);
+                        }
+                    };
+                    
+                    this.websocket.onclose = (event) => {
+                        this.addDebugInfo(`WebSocket closed: ${event.code} ${event.reason}`);
+                        this.wsStatus.textContent = 'Disconnected';
+                        
+                        // Stop everything if connection closes
+                        if (this.isListening) {
+                            this.addDebugInfo('Connection lost - stopping...');
+                            this.stopListening();
+                        }
+                    };
+                    
+                    this.websocket.onerror = (error) => {
+                        this.addDebugInfo(`WebSocket error: ${error}`);
+                        this.wsStatus.textContent = 'Error';
+                        reject(error);
+                    };
+                });
+            }
+
+            startVideoFrameCapture() {
+                this.addDebugInfo('Starting video frame capture...');
+                
+                // Send first frame immediately
+                setTimeout(() => {
+                    this.captureAndSendFrame();
+                }, 2000);
+                
+                // Then send frames every 3 seconds
+                this.frameCapture = setInterval(() => {
+                    this.captureAndSendFrame();
+                }, 3000);
+            }
+
+            captureAndSendFrame() {
+                if (!this.websocket || this.websocket.readyState !== WebSocket.OPEN) {
+                    this.addDebugInfo('⚠️ WebSocket not ready, skipping frame');
+                    return;
+                }
+                
+                if (this.videoFeed.videoWidth === 0 || this.videoFeed.videoHeight === 0) {
+                    this.addDebugInfo('⚠️ Video not ready, skipping frame');
+                    return;
+                }
+
+                try {
+                    // Create canvas and capture frame
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 640;  // Fixed size for consistency
+                    canvas.height = 480;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(this.videoFeed, 0, 0, canvas.width, canvas.height);
+                    
+                    // Convert to base64
+                    const dataURL = canvas.toDataURL('image/jpeg', 0.7);
+                    const base64Data = dataURL.split(',')[1];
+                    
+                    // Send via WebSocket with error handling
+                    const message = {
+                        type: 'video_frame',
+                        data: base64Data,
+                        timestamp: Date.now(),
+                        width: canvas.width,
+                        height: canvas.height
+                    };
+                    
+                    try {
+                        this.websocket.send(JSON.stringify(message));
+                        this.frameCount = (this.frameCount || 0) + 1; // Ensure it's a number
+                        
+                        // Update UI - directly access the element
+                        const frameCountElement = document.getElementById('frameCount');
+                        if (frameCountElement) {
+                            frameCountElement.textContent = this.frameCount.toString();
+                        }
+                        
+                        this.addDebugInfo(`📹 Frame ${this.frameCount} sent (${canvas.width}x${canvas.height})`);
+                    } catch (sendError) {
+                        this.addDebugInfo(`❌ Failed to send frame: ${sendError.message}`);
+                        // Stop capture if sending fails
+                        if (this.frameCapture) {
+                            clearInterval(this.frameCapture);
+                            this.frameCapture = null;
+                        }
+                    }
+                    
+                } catch (error) {
+                    this.addDebugInfo(`❌ Frame capture error: ${error.message}`);
+                    console.error('Frame capture error:', error);
+                }
+            }
+
+            testFrameCapture() {
+                this.addDebugInfo('🧪 Manual frame capture test...');
+                this.captureAndSendFrame();
+            }
+
+            handleSpeechResult(transcript) {
+                const text = transcript.trim();
+                this.addDebugInfo(`🎤 Speech: "${text}"`);
+                
+                if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+                    try {
+                        this.websocket.send(JSON.stringify({
+                            type: 'speech_result',
+                            text: text,
+                            timestamp: Date.now()
+                        }));
+                        this.addDebugInfo(`📤 Speech sent to server`);
+                    } catch (error) {
+                        this.addDebugInfo(`❌ Failed to send speech: ${error.message}`);
+                    }
+                } else {
+                    this.addDebugInfo('⚠️ Cannot send speech - WebSocket not ready');
+                }
+            }
+
+            handleWebSocketMessage(message) {
+                this.addDebugInfo(`📨 Received: ${message.type}`);
+                
+                switch (message.type) {
+                    case 'hotword_detected':
+                        this.updateStatus('hotword', '🟢 Conversation started!');
+                        this.addDebugInfo('🎯 Hotword detected - playing acknowledgment');
+                        this.speak(message.message);
+                        break;
+                        
+                    case 'ai_response':
+                        this.addDebugInfo(`🤖 AI Response received: "${message.answer.substring(0, 50)}..."`);
+                        this.addResponse(message.question, message.answer, message.audio_url);
+                        this.updateStatus('listening', '🎤 Conversation active - ask another question!');
+                        
+                        // Auto-play the audio response
+                        if (message.audio_url) {
+                            this.addDebugInfo(`🔊 Playing audio: ${message.audio_url}`);
+                            this.playAudioResponse(message.audio_url);
+                        } else {
+                            this.addDebugInfo(`🔊 No audio URL, using text-to-speech`);
+                            this.speak(message.answer);
+                        }
+                        
+                        if (message.scene_description) {
+                            this.addDebugInfo(`🖼️ Scene: ${message.scene_description.substring(0, 50)}...`);
+                        }
+                        break;
+                        
+                    case 'processing':
+                        this.updateStatus('processing', message.message);
+                        this.addDebugInfo(`⚙️ Processing: ${message.message}`);
+                        break;
+                        
+                    case 'clarification':
+                        this.updateStatus('listening', '🔄 ' + message.message);
+                        this.addDebugInfo(`🔄 Clarification: ${message.message}`);
+                        this.speak(message.message);
+                        break;
+                        
+                    case 'error':
+                        this.updateStatus('error', `❌ ${message.message}`);
+                        this.addDebugInfo(`❌ Server error: ${message.message}`);
+                        break;
+                        
+                    default:
+                        this.addDebugInfo(`❓ Unknown message type: ${message.type}`);
+                }
+            }
+
+            playAudioResponse(audioUrl) {
+                this.addDebugInfo(`🎵 Attempting to play: ${audioUrl}`);
+                
+                // PAUSE SPEECH RECOGNITION WHILE AI IS SPEAKING
+                this.pauseSpeechRecognition();
+                
+                try {
+                    // Create audio element and play immediately
+                    const audio = new Audio(audioUrl);
+                    
+                    audio.onloadstart = () => {
+                        this.addDebugInfo(`🔄 Audio loading started...`);
+                    };
+                    
+                    audio.oncanplaythrough = () => {
+                        this.addDebugInfo(`✅ Audio ready to play`);
+                        audio.play().then(() => {
+                            this.addDebugInfo(`🔊 Audio playing successfully`);
+                        }).catch(error => {
+                            this.addDebugInfo(`❌ Audio play error: ${error.message}`);
+                            this.resumeSpeechRecognition(); // Resume if play fails
+                            this.speak("I have a response but there's an audio playback issue.");
+                        });
+                    };
+                    
+                    audio.onerror = (error) => {
+                        this.addDebugInfo(`❌ Audio file load error: ${error}`);
+                        this.resumeSpeechRecognition(); // Resume on error
+                        this.speak("I have a response but can't load the audio file.");
+                    };
+                    
+                    audio.onended = () => {
+                        this.addDebugInfo(`✅ Audio playback completed - resuming speech recognition`);
+                        // RESUME SPEECH RECOGNITION AFTER AI FINISHES SPEAKING
+                        setTimeout(() => {
+                            this.resumeSpeechRecognition();
+                        }, 1000); // 1 second delay to avoid picking up echo
+                    };
+                    
+                } catch (error) {
+                    this.addDebugInfo(`❌ Audio playback setup error: ${error.message}`);
+                    this.resumeSpeechRecognition(); // Resume on error
+                    this.speak("I have a response but there's an audio system issue.");
+                }
+            }
+
+            pauseSpeechRecognition() {
+                if (this.recognition && this.isListening) {
+                    try {
+                        this.recognition.stop();
+                        this.speechPaused = true;
+                        this.addDebugInfo(`⏸️ Speech recognition paused (AI speaking)`);
+                    } catch (error) {
+                        this.addDebugInfo(`❌ Error pausing speech recognition: ${error.message}`);
+                    }
+                }
+            }
+
+            resumeSpeechRecognition() {
+                if (this.speechPaused && this.isListening) {
+                    try {
+                        this.recognition.start();
+                        this.speechPaused = false;
+                        this.addDebugInfo(`▶️ Speech recognition resumed (AI finished speaking)`);
+                    } catch (error) {
+                        this.addDebugInfo(`❌ Error resuming speech recognition: ${error.message}`);
+                    }
+                }
+            }
+
+            stopListening() {
+                this.addDebugInfo('Stopping all systems...');
+                this.isListening = false;
+                this.speechPaused = false;
+                
+                if (this.recognition) {
+                    this.recognition.stop();
+                }
+                
+                if (this.frameCapture) {
+                    clearInterval(this.frameCapture);
+                    this.frameCapture = null;
+                }
+                
+                if (this.mediaStream) {
+                    this.mediaStream.getTracks().forEach(track => track.stop());
+                }
+                
+                if (this.websocket) {
+                    this.websocket.close();
+                }
+                
+                // Update UI
+                this.startListeningBtn.disabled = false;
+                this.stopListeningBtn.disabled = true;
+                this.testFrameBtn.disabled = true;
+                this.updateStatus('idle', '🔴 Stopped');
+                this.frameStatus.textContent = 'Not capturing';
+                this.wsStatus.textContent = 'Disconnected';
+                
+                this.addDebugInfo('✅ All systems stopped');
+            }
+
+            speak(text) {
+                try {
+                    // PAUSE SPEECH RECOGNITION WHILE USING TTS
+                    this.pauseSpeechRecognition();
+                    
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.0;
+                    
+                    utterance.onend = () => {
+                        this.addDebugInfo(`✅ TTS completed - resuming speech recognition`);
+                        // RESUME SPEECH RECOGNITION AFTER TTS FINISHES
+                        setTimeout(() => {
+                            this.resumeSpeechRecognition();
+                        }, 1000);
+                    };
+                    
+                    utterance.onerror = (error) => {
+                        this.addDebugInfo(`❌ TTS error: ${error.error}`);
+                        this.resumeSpeechRecognition(); // Resume on error
+                    };
+                    
+                    speechSynthesis.speak(utterance);
+                } catch (error) {
+                    this.addDebugInfo(`TTS error: ${error.message}`);
+                    this.resumeSpeechRecognition(); // Resume on error
+                }
+            }
+
+            addResponse(question, answer, audioUrl) {
+                const responseItem = document.createElement('div');
+                responseItem.className = 'response-item';
+                responseItem.innerHTML = `
+                    <h4>Q: ${question}</h4>
+                    <p>${answer}</p>
+                    ${audioUrl ? `
+                    <div class="audio-controls">
+                        <button class="play-btn" onclick="this.parentElement.querySelector('audio').play()">▶️</button>
+                        <audio src="${audioUrl}" preload="auto"></audio>
+                        <span style="margin-left: 10px; font-size: 14px; opacity: 0.8;">Click to play response</span>
+                    </div>
+                    ` : ''}
+                `;
+                
+                if (this.responseContainer.querySelector('p')) {
+                    this.responseContainer.innerHTML = '';
+                }
+                
+                this.responseContainer.appendChild(responseItem);
+                responseItem.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            updateStatus(type, text) {
+                this.statusIndicator.className = `status-indicator status-${type}`;
+                this.statusText.textContent = text;
+            }
+
+            addDebugInfo(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const debugItem = document.createElement('p');
+                debugItem.textContent = `[${timestamp}] ${message}`;
+                this.debugContainer.appendChild(debugItem);
+                
+                // Keep only last 20 debug messages
+                while (this.debugContainer.children.length > 20) {
+                    this.debugContainer.removeChild(this.debugContainer.firstChild);
+                }
+                
+                // Scroll to bottom
+                this.debugContainer.scrollTop = this.debugContainer.scrollHeight;
+            }
+        }
+
+        // Initialize the application when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new VisionStreamApp();
+        });
+    </script>
+</body>
+</html>

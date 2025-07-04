@@ -1,0 +1,140 @@
+{
+  "session_analytics": [
+    {
+      "session_id": "5da6161c-16e8-4bdd-91b1-adc6c884fd4d",
+      "duration_seconds": 99.400226,
+      "total_events": 7,
+      "event_breakdown": {
+        "session_start": 1,
+        "speech_input": 2,
+        "vision_analysis": 2,
+        "qa_interaction": 2
+      },
+      "has_vision_analysis": true,
+      "has_speech_input": true,
+      "engagement_score": 16.5
+    },
+    {
+      "session_id": "b36d427f-a86f-4230-8148-67b7e5aa02b6",
+      "duration_seconds": 9.896399,
+      "total_events": 4,
+      "event_breakdown": {
+        "session_start": 1,
+        "speech_input": 1,
+        "vision_analysis": 1,
+        "qa_interaction": 1
+      },
+      "has_vision_analysis": true,
+      "has_speech_input": true,
+      "engagement_score": 7.5
+    }
+  ],
+  "user_interaction_patterns": {
+    "most_common_event_types": {
+      "session_start": 2,
+      "speech_input": 3,
+      "vision_analysis": 3,
+      "qa_interaction": 3
+    },
+    "average_events_per_session": 5.5,
+    "peak_usage_hours": {
+      "20": 7,
+      "19": 4
+    },
+    "user_journey_flows": {
+      "session_start -> speech_input -> vision_analysis -> qa_interaction -> speech_input -> vision_analysis -> qa_interaction": [
+        "5da6161c-16e8-4bdd-91b1-adc6c884fd4d"
+      ],
+      "session_start -> speech_input -> vision_analysis -> qa_interaction": [
+        "b36d427f-a86f-4230-8148-67b7e5aa02b6"
+      ]
+    }
+  },
+  "vision_analysis_insights": {
+    "total_vision_analyses": 3,
+    "detected_objects": {
+      "skateboard": 1,
+      "person": 2,
+      "snowboard": 2,
+      "surfboard": 1
+    },
+    "common_scenes": {
+      "indoor_mirror": 2,
+      "person_detected": 1
+    },
+    "analysis_length_stats": [
+      106,
+      105,
+      31
+    ],
+    "avg_analysis_length": 80.66666666666667,
+    "max_analysis_length": 106,
+    "min_analysis_length": 31
+  },
+  "multimedia_analytics": {
+    "storage_breakdown": {
+      "total_storage_bytes": 698048,
+      "total_storage_mb": 0.67,
+      "audio_files_count": 1,
+      "video_frames_count": 8
+    },
+    "file_size_analytics": {
+      "audio": {
+        "avg_size_kb": 179.81,
+        "max_size_kb": 179.81,
+        "min_size_kb": 179.81
+      },
+      "video": {
+        "avg_size_kb": 62.73,
+        "max_size_kb": 63.82,
+        "min_size_kb": 61.13
+      }
+    },
+    "session_multimedia_mapping": {}
+  },
+  "performance_metrics": {
+    "avg_session_duration": 54.6483125,
+    "response_time_analysis": {},
+    "throughput_metrics": {
+      "events_per_hour": 0.4583333333333333,
+      "vision_analyses_per_hour": 0.125
+    },
+    "storage_efficiency": {
+      "storage_per_session": 0,
+      "compression_ratio": 0
+    }
+  },
+  "daily_usage_stats": {
+    "2025-06-29": {
+      "total_events": 7,
+      "unique_sessions": 1,
+      "event_types": {
+        "session_start": 1,
+        "speech_input": 2,
+        "vision_analysis": 2,
+        "qa_interaction": 2
+      }
+    },
+    "2025-06-30": {
+      "total_events": 4,
+      "unique_sessions": 1,
+      "event_types": {
+        "session_start": 1,
+        "speech_input": 1,
+        "vision_analysis": 1,
+        "qa_interaction": 1
+      }
+    }
+  },
+  "ai_accuracy_metrics": {
+    "vision_model_performance": {
+      "total_analyses": 3,
+      "object_detection_rate": 0.6666666666666666,
+      "scene_description_completeness": 0
+    },
+    "speech_model_performance": {
+      "total_speech_inputs": 3,
+      "processing_accuracy": 0
+    }
+  }
+}

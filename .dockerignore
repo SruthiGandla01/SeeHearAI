@@ -1,0 +1,54 @@
+# .dockerignore
+# ===================================
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache
+.coverage
+
+# Virtual environments
+.venv
+venv/
+.env
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+temp/
+
+# AWS
+.aws/
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Build artifacts
+build/
+dist/
+*.egg-info/

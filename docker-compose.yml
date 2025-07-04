@@ -1,0 +1,87 @@
+# docker-compose.yml - Local Development
+# ===================================
+version: '3.8'
+
+services:
+  # PostgreSQL Database (for development)
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: seehearai
+      POSTGRES_USER: seehearai
+      POSTGRES_PASSWORD: seehearai123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis for caching
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://seehearai:seehearai123@db:5432/seehearai
+      - REDIS_URL=redis://redis:6379
+      - AWS_REGION=us-east-1
+      - S3_BUCKET=${S3_BUCKET}
+      - DYNAMODB_TABLE=${DYNAMODB_TABLE}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./app:/app/app
+      - ./logs:/app/logs
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  # Frontend Service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # WebSocket Service
+  websocket:
+    build:
+      context: .
+      dockerfile: Dockerfile.websocket
+    ports:
+      - "8001:8001"
+    environment:
+      - AWS_REGION=us-east-1
+      - TTS_QUEUE_URL=${TTS_QUEUE_URL}
+      - VISION_QUEUE_URL=${VISION_QUEUE_URL}
+      - ANALYTICS_QUEUE_URL=${ANALYTICS_QUEUE_URL}
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  # LocalStack for AWS services (development)
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,sqs,dynamodb
+      - DEFAULT_REGION=us-east-1
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - localstack_data:/tmp/localstack
+
+volumes:
+  postgres_data:
+  localstack_data:

@@ -1,0 +1,30 @@
+[
+  {
+    "session_id": "5da6161c-16e8-4bdd-91b1-adc6c884fd4d",
+    "duration_seconds": 99.400226,
+    "total_events": 7,
+    "event_breakdown": {
+      "session_start": 1,
+      "speech_input": 2,
+      "vision_analysis": 2,
+      "qa_interaction": 2
+    },
+    "has_vision_analysis": true,
+    "has_speech_input": true,
+    "engagement_score": 16.5
+  },
+  {
+    "session_id": "b36d427f-a86f-4230-8148-67b7e5aa02b6",
+    "duration_seconds": 9.896399,
+    "total_events": 4,
+    "event_breakdown": {
+      "session_start": 1,
+      "speech_input": 1,
+      "vision_analysis": 1,
+      "qa_interaction": 1
+    },
+    "has_vision_analysis": true,
+    "has_speech_input": true,
+    "engagement_score": 7.5
+  }
+]
