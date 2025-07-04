@@ -123,8 +123,21 @@ aws lambda invoke \
 - ✅ Proven capability in **speech / vision / NLP integration**
 
 ---
+
+## 🚀 Future Enhancements
+
+- 📱 Build a **mobile-friendly frontend** or app interface  
+- 🌐 Support for **multi-language voice output** and captions  
+- 🧩 Add **Braille text-to-speech** integration (for dual-modality support)  
+- 📦 Automate **CI/CD pipeline with GitHub Actions**  
+- 📊 Expand analytics dashboard with **session duration, usage heatmaps**, and **error logs**  
+- ☁️ Add **cost monitoring** and **autoscaling** logic to optimize AWS usage
   
 ### 📬 Contact
+
+👩‍💻 Developed by: Sruthi Gandla
+📧 Email: sruthi.gandla01@gmail.com
+🌐 GitHub: github.com/SruthiGandla01
 
 Built with ❤️ by Sruthi Gandla
 
