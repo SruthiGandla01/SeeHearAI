@@ -48,13 +48,14 @@ python -m venv .venv
 source .venv/bin/activate  # (On Windows: .venv\Scripts\activate)
 
 ```
-###3️⃣ Install Required Dependencies
+### 3️⃣ Install Required Dependencies
 
 ```bash
 pip install -r requirements.txt
+
 ```
 
-###4️⃣ Set Up Environment Variables
+### 4️⃣ Set Up Environment Variables
 
 Create a .env file in the root directory with the following content:
 
@@ -66,34 +67,43 @@ AWS_REGION=us-east-1
 S3_BUCKET_NAME=seehearai-bucket
 DYNAMODB_TABLE_NAME=SeeHearAI-Analytics
 LAMBDA_FUNCTION_NAME=SeeHearAI-ETL
+
 ```
-###💻 Run the App Locally
+### 💻 Run the App Locally
 ▶️ Start the FastAPI Server
 
 ```bash
 uvicorn app.fastapi_server:app --reload --port 8000
+
 ```
 Visit: http://127.0.0.1:8000
 
-###☁️ Deploy to AWS EC2
+### ☁️ Deploy to AWS EC2
 🔐 SSH into EC2
 
 ```bash
 ssh -i seehearai-key.pem ec2-user@<your-ec2-ip>
+
 ```
-###🚀 Deploy the Application
+
+### 🚀 Deploy the Application
 ```bash
 bash deploy-seehearai.sh
+
 ```
-###⚙️ Trigger ETL Pipeline (AWS Lambda)
+### ⚙️ Trigger ETL Pipeline (AWS Lambda)
 Run the following command to manually invoke the Lambda function:
+
 ```bash
 aws lambda invoke \
   --function-name SeeHearAI-ETL \
   --region us-east-1 \
   --payload '{}' \
   response.json
+
 ```
+---
+
 ## 📊 Analytics Dashboard
 
 - Every interaction is logged to **DynamoDB** & **S3**
@@ -111,8 +121,10 @@ aws lambda invoke \
 - ✅ Designed **scalable architecture** inspired by **BeMyEyes**  
 - ✅ Implemented **event-driven ETL** with real-time logs in **DynamoDB** & **S3**  
 - ✅ Proven capability in **speech / vision / NLP integration**
+
+---
   
-###📬 Contact
+### 📬 Contact
 
 Built with ❤️ by Sruthi Gandla
 
